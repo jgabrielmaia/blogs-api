@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Api.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Model;
+using Repository.Interfaces;
 
 namespace Api.Controllers
 {
@@ -12,45 +15,88 @@ namespace Api.Controllers
     {
         private readonly ILogger<PostController> _logger;
 
-        public PostController(ILogger<PostController> logger)
+        private readonly IPostRepository _postRepository;
+
+        private readonly ICommentRepository _commentRepository;
+
+        public PostController(
+            ILogger<PostController> logger,
+            ICommentRepository commentRepository,
+            IPostRepository postRepository)
         {
             _logger = logger;
+            _postRepository = postRepository;
+            _commentRepository = commentRepository;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Post>> GetAll()
         {
-            throw new NotImplementedException();
+            return Ok(_postRepository.GetAll());
         }
 
         [HttpGet("{id:guid}")]
+        [PostExistsActionFilterAttribute]
         public ActionResult<Post> Get([FromRoute] Guid id)
         {
-            throw new NotImplementedException();
+            var post = _postRepository.Get(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(post);
         }
 
         [HttpPost]
         public ActionResult<Post> Post([FromBody] Post post)
         {
-            throw new NotImplementedException();
+            var createdPost = _postRepository.Create(post);
+
+            return CreatedAtAction(nameof(Get), new { id = createdPost.Id }, createdPost);
         }
 
         [HttpPut("{id:guid}")]
-        public ActionResult<Post> Put([FromRoute] Guid id, [FromBody] Post post)
+        [PostExistsActionFilterAttribute]
+        public IActionResult Put([FromRoute] Guid id, [FromBody] Post post)
         {
-            throw new NotImplementedException();
+            if (post.Id != id)
+            {
+                return BadRequest();
+            }
+
+            _postRepository.Update(post);
+
+            return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
+        [PostExistsActionFilterAttribute]
         public IActionResult Delete([FromRoute] Guid id)
         {
-            throw new NotImplementedException();
+            var was_deleted = _postRepository.Delete(id);
+
+            if (was_deleted)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
         }
 
         [HttpGet("{id:guid}/comments")]
+        [PostExistsActionFilterAttribute]
         public ActionResult<IEnumerable<Comment>> GetComments([FromRoute] Guid id)
         {
-            throw new NotImplementedException();
+            var comments = _commentRepository.GetByPostId(id);
+
+            if (comments.Any())
+            {
+                return Ok(comments);
+            }
+
+            return NotFound();
         }
     }
 }

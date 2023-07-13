@@ -1,39 +1,65 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using Repository.Interfaces;
 
 namespace Repository
 {
-    public class CommentRepository
+    public class CommentRepository : ICommentRepository
     {
-        public IEnumerable<Comment> GetAll()
+        private readonly BlogContext _blogContext;
+
+        public CommentRepository(BlogContext blogContext)
         {
-            throw new NotImplementedException();
+            _blogContext = blogContext;
         }
 
-        public Comment Get(Guid id)
+        public virtual IEnumerable<Comment> GetAll()
         {
-            throw new NotImplementedException();
+            return _blogContext.Comments.ToList();
         }
 
-        public Comment Create(Comment comment)
+        public virtual Comment Get(Guid id)
         {
-            throw new NotImplementedException();
+            return _blogContext.Comments.Find(id);
         }
 
-        public Comment Update(Comment comment)
+        public virtual Comment Create(Comment comment)
         {
-            throw new NotImplementedException();
+            _blogContext.Comments.Add(comment);
+            _blogContext.SaveChanges();
+
+            return comment;
         }
 
-        public bool Delete(Guid id)
+        public virtual Comment Update(Comment comment)
         {
-            throw new NotImplementedException();
+            _blogContext.Entry(comment).State = EntityState.Modified;
+            _blogContext.SaveChanges();
+
+            return comment;
         }
 
-        public IEnumerable<Comment> GetByPostId(Guid postId)
+        public virtual bool Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var comment = this.Get(id);
+
+            if (comment == null)
+            {
+                return false;
+            }
+
+            _blogContext.Comments.Remove(comment);
+            _blogContext.SaveChanges();
+
+            return true;
+        }
+
+        public virtual IEnumerable<Comment> GetByPostId(Guid postId)
+        {
+            return _blogContext.Comments.Where(comment => comment.PostId == postId).ToList();
         }
     }
 }

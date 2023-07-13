@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository;
+using Repository.Interfaces;
 
 namespace Api
 {
@@ -20,6 +21,8 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BlogContext>(x => x.UseInMemoryDatabase("InMemoryDb"));
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
             services.AddControllers();
         }
 
