@@ -36,7 +36,7 @@ namespace Api.Controllers
         /// <param name="id">The ID of the comment.</param>
         /// <returns>The comment with the specified ID.</returns>
         [HttpGet("{id:guid}")]
-        public ActionResult<Comment> Get([FromRoute] Guid id)
+        public ActionResult<Comment> Get(Guid id)
         {
             var comment = _commentRepository.Get(id);
 
@@ -85,7 +85,7 @@ namespace Api.Controllers
         /// <param name="comment">The updated comment.</param>
         /// <returns>No content.</returns>
         [HttpPut("{id:guid}")]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] Comment comment)
+        public IActionResult Put(Guid id, [FromBody] Comment comment)
         {
             if (comment.Id != id)
             {
@@ -103,7 +103,7 @@ namespace Api.Controllers
         /// <param name="id">The ID of the comment to delete.</param>
         /// <returns>No content if the comment was deleted; otherwise, returns not found.</returns>
         [HttpDelete("{id:guid}")]
-        public IActionResult Delete([FromRoute] Guid id)
+        public IActionResult Delete(Guid id)
         {
             var wasDeleted = _commentRepository.Delete(id);
 

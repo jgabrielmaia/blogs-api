@@ -14,9 +14,7 @@ namespace Api.Controllers
     public class PostController : ControllerBase
     {
         private readonly ILogger<PostController> _logger;
-
         private readonly IPostRepository _postRepository;
-
         private readonly ICommentRepository _commentRepository;
 
         public PostController(
@@ -29,15 +27,24 @@ namespace Api.Controllers
             _commentRepository = commentRepository;
         }
 
+        /// <summary>
+        /// Gets all posts.
+        /// </summary>
+        /// <returns>List of posts.</returns>
         [HttpGet]
         public ActionResult<IEnumerable<Post>> GetAll()
         {
             return Ok(_postRepository.GetAll());
         }
 
+        /// <summary>
+        /// Gets a post by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the post.</param>
+        /// <returns>The post with the specified ID.</returns>
         [HttpGet("{id:guid}")]
-        [PostExistsActionFilterAttribute]
-        public ActionResult<Post> Get([FromRoute] Guid id)
+        [PostExistsActionFilter]
+        public ActionResult<Post> Get(Guid id)
         {
             var post = _postRepository.Get(id);
 
@@ -49,6 +56,11 @@ namespace Api.Controllers
             return Ok(post);
         }
 
+        /// <summary>
+        /// Creates a new post.
+        /// </summary>
+        /// <param name="post">The post to create.</param>
+        /// <returns>The newly created post.</returns>
         [HttpPost]
         public ActionResult<Post> Post([FromBody] Post post)
         {
@@ -57,9 +69,15 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = createdPost.Id }, createdPost);
         }
 
+        /// <summary>
+        /// Updates an existing post.
+        /// </summary>
+        /// <param name="id">The ID of the post to update.</param>
+        /// <param name="post">The updated post.</param>
+        /// <returns>No content.</returns>
         [HttpPut("{id:guid}")]
-        [PostExistsActionFilterAttribute]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] Post post)
+        [PostExistsActionFilter]
+        public IActionResult Put(Guid id, [FromBody] Post post)
         {
             if (post.Id != id)
             {
@@ -71,13 +89,18 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a post by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the post to delete.</param>
+        /// <returns>No content if the post was deleted; otherwise, returns not found.</returns>
         [HttpDelete("{id:guid}")]
-        [PostExistsActionFilterAttribute]
-        public IActionResult Delete([FromRoute] Guid id)
+        [PostExistsActionFilter]
+        public IActionResult Delete(Guid id)
         {
-            var was_deleted = _postRepository.Delete(id);
+            var wasDeleted = _postRepository.Delete(id);
 
-            if (was_deleted)
+            if (wasDeleted)
             {
                 return NoContent();
             }
@@ -85,9 +108,14 @@ namespace Api.Controllers
             return NotFound();
         }
 
+        /// <summary>
+        /// Gets all comments for a specific post.
+        /// </summary>
+        /// <param name="id">The ID of the post.</param>
+        /// <returns>List of comments for the post.</returns>
         [HttpGet("{id:guid}/comments")]
-        [PostExistsActionFilterAttribute]
-        public ActionResult<IEnumerable<Comment>> GetComments([FromRoute] Guid id)
+        [PostExistsActionFilter]
+        public ActionResult<IEnumerable<Comment>> GetComments(Guid id)
         {
             return Ok(_commentRepository.GetByPostId(id));
         }
