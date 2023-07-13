@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Model
 {
     public record Post
     {
+        [Key]
         public Guid? Id { get; set; }
 
         [Required]
@@ -17,5 +19,7 @@ namespace Model
 
         [Required]
         public DateTime? CreationDate { get; set; }
+
+        public virtual IEnumerable<Comment> Comments { get; set; }
     }
 }

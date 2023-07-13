@@ -5,6 +5,7 @@ namespace Model
 {
     public record Comment
     {
+        [Key]
         public Guid? Id { get; set; }
 
         [Required]
@@ -20,5 +21,7 @@ namespace Model
 
         [Required]
         public DateTime? CreationDate { get; set; }
+
+        public virtual Post Post { get; set; }
     }
 }
