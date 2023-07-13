@@ -89,14 +89,7 @@ namespace Api.Controllers
         [PostExistsActionFilterAttribute]
         public ActionResult<IEnumerable<Comment>> GetComments([FromRoute] Guid id)
         {
-            var comments = _commentRepository.GetByPostId(id);
-
-            if (comments.Any())
-            {
-                return Ok(comments);
-            }
-
-            return NotFound();
+            return Ok(_commentRepository.GetByPostId(id));
         }
     }
 }

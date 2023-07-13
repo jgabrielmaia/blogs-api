@@ -34,12 +34,16 @@ namespace Repository
             return comment;
         }
 
-        public virtual Comment Update(Comment comment)
+        public virtual Comment Update(Comment updatedComment)
         {
-            _blogContext.Entry(comment).State = EntityState.Modified;
-            _blogContext.SaveChanges();
+            var existingComment = Get(updatedComment.Id.Value);
+            if (existingComment != null)
+            {
+                _blogContext.Entry(existingComment).CurrentValues.SetValues(updatedComment);
+                _blogContext.SaveChanges();
+            }
 
-            return comment;
+            return existingComment;
         }
 
         public virtual bool Delete(Guid id)

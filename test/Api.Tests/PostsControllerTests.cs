@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Model;
 using Repository;
 using Xunit;
+using Moq;
 
 namespace Api.Tests
 {
@@ -261,7 +262,7 @@ namespace Api.Tests
         }
 
         [Fact]
-        public void Given_GetComments_When_No_Comments_Exist_Then_Returns_NotFound()
+        public void Given_GetComments_When_No_Comments_Exist_Then_Returns_OkResult_With_EmptyList()
         {
             // Arrange
             var loggerMock = Mock.Of<ILogger<PostController>>();
@@ -271,7 +272,9 @@ namespace Api.Tests
             var actual = new PostController(loggerMock, _commentRepository, _postRepository).GetComments(postId);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(actual.Result);
+            var okObjectResult = Assert.IsType<OkObjectResult>(actual.Result);
+            var comments = Assert.IsType<Comment[]>(okObjectResult.Value);
+            Assert.Empty(comments);
         }
     }
 }

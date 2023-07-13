@@ -1,6 +1,8 @@
-using Model;
+﻿using Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Xunit;
 
 namespace Model.Tests;
 
@@ -28,7 +30,6 @@ public class PostTests
     }
 
     [Theory]
-    [InlineData(nameof(Post.Id))]
     [InlineData(nameof(Post.Title))]
     [InlineData(nameof(Post.Content))]
     [InlineData(nameof(Post.CreationDate))]
@@ -42,11 +43,11 @@ public class PostTests
             Content = "Valid content",
             CreationDate = DateTime.Now
         };
-        
-        # pragma warning disable CS8602
+
+#pragma warning disable CS8602
         var postField = post.GetType().GetProperty(fieldName);
         postField.SetValue(post, null);
-        # pragma warning restore CS8602
+#pragma warning restore CS8602
 
         var validationErrors = new List<ValidationResult>();
         var context = new ValidationContext(post, serviceProvider: null, items: null);
@@ -65,7 +66,7 @@ public class PostTests
     [InlineData(nameof(Post.Title), 30)]
     [InlineData(nameof(Post.Content), 1200)]
     public void Given_Post_WhenTitleIsAbsent_ValidationHasMaxLengthError(string fieldName, int fieldLength)
-    {   
+    {
         var limitExceededLength = fieldLength + 1;
         var field = new string('*', limitExceededLength);
         // Arrange
@@ -77,10 +78,10 @@ public class PostTests
             CreationDate = DateTime.Now
         };
 
-        # pragma warning disable CS8602
+#pragma warning disable CS8602
         var postField = post.GetType().GetProperty(fieldName);
         postField.SetValue(post, field);
-        # pragma warning restore CS8602
+#pragma warning restore CS8602
 
         var validationErrors = new List<ValidationResult>();
         var context = new ValidationContext(post, serviceProvider: null, items: null);

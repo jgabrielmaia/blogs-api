@@ -1,6 +1,7 @@
-using Model;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System;
+using Xunit;
 
 namespace Model.Tests;
 
@@ -13,47 +14,49 @@ public class CommentTests
         var comment = new Comment
         {
             Id = Guid.NewGuid(),
-            Title = "Valid Title",
+            PostId = Guid.NewGuid(),
+            Author = "Valid Author",
             Content = "Valid content",
             CreationDate = DateTime.Now
         };
         var validationErrors = new List<ValidationResult>();
-        var context = new ValidationContext(post, serviceProvider: null, items: null);
+        var context = new ValidationContext(comment, serviceProvider: null, items: null);
 
         // Act
-        Validator.TryValidateObject(post, context, validationErrors, validateAllProperties: true);
+        Validator.TryValidateObject(comment, context, validationErrors, validateAllProperties: true);
 
         // Assert
         Assert.Empty(validationErrors);
     }
 
     [Theory]
-    [InlineData(nameof(Post.Id))]
-    [InlineData(nameof(Post.Title))]
-    [InlineData(nameof(Post.Content))]
-    [InlineData(nameof(Post.CreationDate))]
+    [InlineData(nameof(Comment.PostId))]
+    [InlineData(nameof(Comment.Author))]
+    [InlineData(nameof(Comment.Content))]
+    [InlineData(nameof(Comment.CreationDate))]
     public void Given_Post_WhenFieldIsAbsent_ValidationHasFieldRequiredError(string fieldName)
     {
         // Arrange
-        var post = new Post
+        var comment = new Comment
         {
             Id = Guid.NewGuid(),
-            Title = "Valid Title",
+            PostId = Guid.NewGuid(),
+            Author = "Valid Author",
             Content = "Valid content",
             CreationDate = DateTime.Now
         };
-        
-        # pragma warning disable CS8602
-        var postField = post.GetType().GetProperty(fieldName);
-        postField.SetValue(post, null);
-        # pragma warning restore CS8602
+
+#pragma warning disable CS8602
+        var postField = comment.GetType().GetProperty(fieldName);
+        postField.SetValue(comment, null);
+#pragma warning restore CS8602
 
         var validationErrors = new List<ValidationResult>();
-        var context = new ValidationContext(post, serviceProvider: null, items: null);
+        var context = new ValidationContext(comment, serviceProvider: null, items: null);
         var expectedErrorMessage = $"The {fieldName} field is required.";
 
         // Act
-        Validator.TryValidateObject(post, context, validationErrors, validateAllProperties: true);
+        Validator.TryValidateObject(comment, context, validationErrors, validateAllProperties: true);
 
         // Assert
         Assert.Single(validationErrors);
@@ -62,32 +65,33 @@ public class CommentTests
     }
 
     [Theory]
-    [InlineData(nameof(Post.Title), 30)]
-    [InlineData(nameof(Post.Content), 1200)]
+    [InlineData(nameof(Comment.Author), 30)]
+    [InlineData(nameof(Comment.Content), 120)]
     public void Given_Post_WhenTitleIsAbsent_ValidationHasMaxLengthError(string fieldName, int fieldLength)
-    {   
+    {
         var limitExceededLength = fieldLength + 1;
         var field = new string('*', limitExceededLength);
         // Arrange
-        var post = new Post
+        var comment = new Comment
         {
             Id = Guid.NewGuid(),
-            Title = "Valid Title",
+            PostId = Guid.NewGuid(),
+            Author = "Valid Author",
             Content = "Valid content",
             CreationDate = DateTime.Now
         };
 
-        # pragma warning disable CS8602
-        var postField = post.GetType().GetProperty(fieldName);
-        postField.SetValue(post, field);
-        # pragma warning restore CS8602
+#pragma warning disable CS8602
+        var postField = comment.GetType().GetProperty(fieldName);
+        postField.SetValue(comment, field);
+#pragma warning restore CS8602
 
         var validationErrors = new List<ValidationResult>();
-        var context = new ValidationContext(post, serviceProvider: null, items: null);
+        var context = new ValidationContext(comment, serviceProvider: null, items: null);
         var expectedErrorMessage = $"The field {fieldName} must be a string or array type with a maximum length of '{fieldLength}'.";
 
         // Act
-        Validator.TryValidateObject(post, context, validationErrors, validateAllProperties: true);
+        Validator.TryValidateObject(comment, context, validationErrors, validateAllProperties: true);
 
         // Assert
         Assert.Single(validationErrors);

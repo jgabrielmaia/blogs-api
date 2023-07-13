@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Model;
 using Repository;
+using Xunit;
+using Moq;
 
 namespace Api.Tests
 {
