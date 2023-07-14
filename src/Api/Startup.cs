@@ -58,11 +58,7 @@ namespace Api
         {
             app.UseRouting();
             app.UseSwagger();  
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BestBlogs API v1");
-                c.RoutePrefix = "/swagger";
-            });  
+            app.UseSwaggerUI();  
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
