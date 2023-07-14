@@ -28,7 +28,6 @@ namespace Api
             services.AddDbContext<BlogContext>(x => x.UseInMemoryDatabase("InMemoryDb"));
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
-            services.AddControllers();
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -51,6 +50,8 @@ namespace Api
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
+            services.AddControllers();
+            services.MapControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
