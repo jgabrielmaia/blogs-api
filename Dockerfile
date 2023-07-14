@@ -7,13 +7,10 @@ COPY BestBlogs.sln .
 COPY src/Api/Api.csproj ./src/Api/
 COPY src/Model/Model.csproj ./src/Model/
 COPY src/Repository/Repository.csproj ./src/Repository/
-
-# Run tests
 COPY test/Api.Tests/Api.Tests.csproj ./test/Api.Tests/
 COPY test/Repository.Tests/Repository.Tests.csproj ./test/Repository.Tests/
 COPY test/Model.Tests/Model.Tests.csproj ./test/Model.Tests/
 
-# Build the projects
 RUN dotnet restore BestBlogs.sln
 RUN dotnet test --no-restore --verbosity normal
 RUN dotnet build -c Release --no-restore
